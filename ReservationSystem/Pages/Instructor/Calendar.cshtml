@@ -1,0 +1,221 @@
+@page
+@model ReservationSystem.Pages.Instructor.CalendarModel
+@{
+    ViewData["Title"] = "Reservation Calendar";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. -->
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    .fc-toolbar-title {
+        font-size: 1.5rem;
+    }
+
+    #calendar {
+        background-color: #fff;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a asp-page="/Instructor/Index">Instructor Dashboard</a></li>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Reservation Calendar</a></li>
+        <li><a asp-page="/Instructor/Classrooms">Classroom List & Feedback</a></li>
+        <li><a asp-page="/Instructor/MyReservations">My Reservations</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for reservation calendar -->
+<div class="main-content-area">
+    <h2 class="text-center mb-4 text-primary">Reservation Calendar</h2>
+    <div id="calendar"></div>
+
+    <!-- Reservation modal for creating a new reservation -->
+    <div class="modal fade" id="reservationModal" tabindex="-1" aria-labelledby="reservationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content" id="reservationForm">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="reservationModalLabel">New Reservation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="ReservationDate" name="ReservationDate" />
+
+                    <!-- Start time input field -->
+                    <div class="mb-3">
+                        <label for="StartTime" class="form-label">Start Time</label>
+                        <input type="time" id="StartTime" name="StartTime" class="form-control" required />
+                    </div>
+
+                    <!-- End time input field -->
+                    <div class="mb-3">
+                        <label for="EndTime" class="form-label">End Time</label>
+                        <input type="time" id="EndTime" name="EndTime" class="form-control" required />
+                    </div>
+
+                    <!-- Classroom selection dropdown -->
+                    <div class="mb-3">
+                        <label for="ClassroomId" class="form-label">Classroom</label>
+                        <select name="ClassroomId" id="ClassroomId" class="form-select" required>
+                            @foreach (var room in Model.ClassroomList)
+                            {
+                                <option value="@room.Id">@room.Name (@room.Capacity)</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.css" rel="stylesheet" />
+}
+
+@section Scripts {
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const calendarEl = document.getElementById('calendar');
+            const holidayDates = [];
+            let currentEvents = [];
+
+            // Initialize FullCalendar
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek'
+                },
+                // Handle date click to open reservation modal
+                dateClick: function (info) {
+                    const clickedDate = info.dateStr;
+
+                    // Prevent reservation on public holidays
+                    if (holidayDates.includes(clickedDate)) {
+                        alert("This is a public holiday. You cannot make a reservation.");
+                        return;
+                    }
+
+                    document.getElementById("ReservationDate").value = clickedDate;
+                    document.getElementById("StartTime").value = "08:00";
+                    document.getElementById("EndTime").value = "10:00";
+                    new bootstrap.Modal(document.getElementById('reservationModal')).show();
+                },
+                // Load reservation events from the server
+                events: {
+                    url: '/Instructor/Calendar?handler=Reservations',
+                    failure: () => alert("Failed to load reservations."),
+                    success: function (events) {
+                        currentEvents = events;
+                    }
+                }
+            });
+
+            // Fetch public holidays and add them to the calendar as background events
+            fetch(`https://date.nager.at/api/v3/PublicHolidays/${new Date().getFullYear()}/TR`)
+                .then(res => res.json())
+                .then(data => {
+                    const holidayEvents = data.map(h => {
+                        holidayDates.push(h.date);
+                        return {
+                            title: h.localName,
+                            start: h.date,
+                            allDay: true,
+                            display: 'background',
+                            color: '#ffcccc'
+                        };
+                    });
+                    calendar.addEventSource(holidayEvents);
+                });
+
+            calendar.render();
+
+            // Reservation form submission handler to check for time conflicts
+            document.getElementById("reservationForm").addEventListener("submit", function (e) {
+                const date = document.getElementById("ReservationDate").value;
+                const start = document.getElementById("StartTime").value;
+                const end = document.getElementById("EndTime").value;
+                const classroomId = document.getElementById("ClassroomId").value;
+
+                const startDateTime = new Date(`${date}T${start}`);
+                const endDateTime = new Date(`${date}T${end}`);
+
+                // Check for conflicts with existing reservations in the selected classroom
+                const conflict = currentEvents.some(ev => {
+                    if (!ev.extendedProps || ev.extendedProps.classroomId != classroomId)
+                        return false;
+
+                    const evStart = new Date(ev.start);
+                    const evEnd = new Date(ev.end);
+
+                    return (
+                        startDateTime < evEnd &&
+                        endDateTime > evStart
+                    );
+                });
+
+                // Prevent submission if there is a conflict
+                if (conflict) {
+                    alert("This time slot is already reserved in this classroom.");
+                    e.preventDefault();
+                }
+            });
+        });
+    </script>
+}

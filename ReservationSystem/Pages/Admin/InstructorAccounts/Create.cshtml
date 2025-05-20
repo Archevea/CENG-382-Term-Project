@@ -1,0 +1,66 @@
+@page
+@model ReservationSystem.Pages.Admin.InstructorAccounts.CreateModel
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<style>
+    /* Styling for the user creation form container */
+    .form-container {
+        max-width: 500px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .form-container h2 {
+        margin-bottom: 30px;
+        text-align: center;
+        color: #1abc9c;
+    }
+</style>
+
+<!-- Main form container for creating a new user -->
+<div class="form-container">
+    <h2>Create New User</h2>
+
+    <!-- User creation form -->
+    <form method="post">
+        <!-- Email input field -->
+        <div class="form-group mb-3">
+            <label asp-for="Email" class="form-label fw-bold"></label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger small"></span>
+        </div>
+
+        <!-- Password input field -->
+        <div class="form-group mb-3">
+            <label asp-for="Password" class="form-label fw-bold"></label>
+            <input asp-for="Password" class="form-control" />
+            <span asp-validation-for="Password" class="text-danger small"></span>
+        </div>
+
+        <!-- Role selection dropdown -->
+        <div class="form-group mb-4">
+            <label asp-for="Role" class="form-label fw-bold">Role</label>
+            <select asp-for="Role" class="form-select" required>
+                <option value="">Select Role</option>
+                <option value="Instructor">Instructor</option>
+                <option value="Admin">Admin</option>
+            </select>
+            <span asp-validation-for="Role" class="text-danger small"></span>
+        </div>
+
+        <!-- Form action buttons -->
+        <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-success px-4">Create</button>
+            <a asp-page="./Index" class="btn btn-outline-secondary px-4">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" /> <!-- Include validation scripts -->
+}

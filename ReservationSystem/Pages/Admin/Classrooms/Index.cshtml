@@ -1,0 +1,135 @@
+@page
+@model ReservationSystem.Pages_Admin_Classrooms.IndexModel
+@{
+    ViewData["Title"] = "Classroom List";
+}
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a asp-page="/Admin/Index">Admin Dashboard</a></li>
+        <li><a asp-page="/Admin/Terms/Index">Manage Term</a></li>
+        <li><a asp-page="/Admin/InstructorAccounts/Index">Instructor Account Manager</a></li>
+        <li><a asp-page="/Admin/ReservationCalendar/Calendar">Reservation Calendar</a></li>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Classroom List</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for classroom list -->
+<div class="main-content-area">
+    <h2 class="mb-4 text-primary">Classroom List</h2>
+
+    <!-- Search form for classrooms -->
+    <form method="get" class="d-flex mb-3" role="search">
+        <input type="text" name="search" value="@Model.SearchTerm" placeholder="Search by classroom name..." class="form-control me-2" />
+        <button class="btn btn-outline-primary">Search</button>
+    </form>
+
+    <!-- Button to create a new classroom -->
+    <a class="btn btn-success mb-3" asp-page="Create">+ Create New Classroom</a>
+
+    @if (!Model.ClassroomList.Any())
+    {
+        <!-- Show message if no classrooms are found -->
+        <div class="alert alert-info">No classrooms found.</div>
+    }
+    else
+    {
+        <!-- Table of classrooms -->
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Name</th>
+                        <th>Capacity</th>
+                        <th>Avg. Rating ⭐</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.ClassroomList)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td class="text-center">@item.Capacity</td>
+                            <td class="text-center">
+                                @(item.AverageRating.HasValue
+                                    ? $"{item.AverageRating.Value:F1} / 5"
+                                    : "N/A")
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex justify-content-center gap-2">
+                                    <!-- Edit, Details, and Delete action buttons -->
+                                    <a asp-page="./Edit" asp-route-id="@item.Id" class="btn btn-sm btn-primary">Edit</a>
+                                    <a asp-page="./Details" asp-route-id="@item.Id" class="btn btn-sm btn-secondary">Details</a>
+                                    <a asp-page="./Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Delete</a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for classroom list -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center mt-4">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-route-search="@Model.SearchTerm" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</div>

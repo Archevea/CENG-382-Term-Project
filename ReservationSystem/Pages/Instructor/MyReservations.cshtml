@@ -1,0 +1,139 @@
+@page
+@model ReservationSystem.Pages.Instructor.MyReservationsModel
+@{
+    ViewData["Title"] = "My Reservations";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. -->
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    /* Status color classes for reservation status */
+    .text-status-pending {
+        color: #ffc107;
+        font-weight: 600;
+    }
+
+    .text-status-approved {
+        color: #198754;
+        font-weight: 600;
+    }
+
+    .text-status-rejected {
+        color: #dc3545;
+        font-weight: 600;
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a asp-page="/Instructor/Index">Instructor Dashboard</a></li>
+        <li><a asp-page="/Instructor/Calendar">Reservation Calendar</a></li>
+        <li><a asp-page="/Instructor/Classrooms">Classroom List & Feedback</a></li>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">My Reservations</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for reservation list -->
+<div class="main-content-area">
+    <h2 class="text-center text-primary mb-4">My Reservations</h2>
+
+    <!-- Search form for filtering reservations by classroom -->
+    <form method="get" class="d-flex mb-4 justify-content-center">
+        <input type="text" name="search" value="@Model.SearchTerm" class="form-control w-50 me-2" placeholder="Search by classroom..." />
+        <button class="btn btn-outline-primary">Search</button>
+    </form>
+
+    @if (Model.Reservations.Count == 0)
+    {
+        <!-- Show message if no reservations exist -->
+        <div class="alert alert-info text-center">You don't have any reservations.</div>
+    }
+    else
+    {
+        <!-- Table of reservations -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle">
+                <thead class="table-dark text-center">
+                    <tr>
+                        <th>Classroom</th>
+                        <th>Start</th>
+                        <th>End</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var res in Model.Reservations)
+                    {
+                        <tr class="text-center">
+                            <td>@res.Classroom.Name</td>
+                            <td>@res.StartTime.ToString("g")</td>
+                            <td>@res.EndTime.ToString("g")</td>
+                            <td class="@(res.Status == "Pending" ? "text-status-pending" 
+                                        : res.Status == "Approved" ? "text-status-approved" 
+                                        : "text-status-rejected")">@res.Status</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination for reservation list -->
+        @if (Model.TotalPages > 1)
+        {
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-route-search="@Model.SearchTerm" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    }
+</div>

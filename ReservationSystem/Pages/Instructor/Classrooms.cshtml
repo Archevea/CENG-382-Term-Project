@@ -1,0 +1,196 @@
+@page
+@model ReservationSystem.Pages.Instructor.ClassroomsModel
+@{
+    ViewData["Title"] = "Classroom List";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. -->
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    .card {
+        border-radius: 12px;
+    }
+
+    .card-body strong {
+        font-size: 1.1rem;
+    }
+
+    .weekly-table td, .weekly-table th {
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .table-title {
+        margin-top: 40px;
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a asp-page="/Instructor/Index">Instructor Dashboard</a></li>
+        <li><a asp-page="/Instructor/Calendar">Reservation Calendar</a></li>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Classroom List & Feedback</a></li>
+        <li><a asp-page="/Instructor/MyReservations">My Reservations</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for classroom list -->
+<div class="main-content-area">
+    <h2 class="text-center mb-4 text-primary">Classroom List</h2>
+
+    <!-- Search form for classrooms -->
+    <form method="get" class="d-flex mb-3 justify-content-center">
+        <input type="text" name="search" value="@Model.SearchTerm" class="form-control me-2" placeholder="Search by classroom name..." />
+        <button class="btn btn-outline-primary">Search</button>
+    </form>
+
+    <!-- Classroom cards with feedback and weekly schedule -->
+    @foreach (var classroom in Model.Classrooms)
+    {
+        <div class="card shadow-sm mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>@classroom.Name</strong>
+                        <div class="text-muted">Capacity: @classroom.Capacity</div>
+                    </div>
+                    <!-- Button to open feedback modal for this classroom -->
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#feedbackModal" data-classroom-id="@classroom.Id">
+                        Give Feedback
+                    </button>
+                </div>
+
+                <!-- Weekly schedule table for this classroom -->
+                @if (Model.WeeklySchedules.TryGetValue(classroom.Id, out var schedule))
+                {
+                    <h6 class="table-title text-secondary">Weekly Schedule</h6>
+                    <table class="table table-bordered weekly-table">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Instructor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in schedule)
+                            {
+                                <tr>
+                                    <td>@item.Day</td>
+                                    <td>@item.Time</td>
+                                    <td>@item.Instructor</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+    }
+
+    <!-- Pagination for classroom list -->
+    @if (Model.TotalPages > 1)
+    {
+        <nav>
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-route-search="@Model.SearchTerm" asp-route-page="@i">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+    <!-- Feedback modal for submitting classroom feedback -->
+    <div class="modal fade" id="feedbackModal" tabindex="-1" aria-labelledby="feedbackModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <form method="post" class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="feedbackModalLabel">Give Feedback</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" asp-for="SelectedClassroomId" id="selectedClassroomId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Comment" class="form-label">Comment</label>
+                        <textarea asp-for="Comment" class="form-control" rows="3" required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Rating" class="form-label">Rating (1 to 5)</label>
+                        <select asp-for="Rating" class="form-select" required>
+                            <option value="">Select rating</option>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">@i</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Set the classroom ID in the feedback modal when it is shown
+        const feedbackModal = document.getElementById('feedbackModal');
+        feedbackModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const classroomId = button.getAttribute('data-classroom-id');
+            document.getElementById('selectedClassroomId').value = classroomId;
+        });
+    </script>
+}

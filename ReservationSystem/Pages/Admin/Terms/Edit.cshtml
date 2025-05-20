@@ -1,0 +1,57 @@
+@page
+@model ReservationSystem.Pages_Admin_Terms.EditModel
+
+@{
+    ViewData["Title"] = "Edit Term";
+}
+
+<!-- Main container for the edit term form -->
+<div class="container mt-5">
+    <h1 class="text-center text-info mb-4">Edit Term</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Edit term form -->
+                    <form method="post">
+                        <!-- Display model validation summary -->
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                        <input type="hidden" asp-for="Term.Id" /> <!-- Hidden field for term ID -->
+
+                        <!-- Term Name input field -->
+                        <div class="mb-3">
+                            <label asp-for="Term.Name" class="form-label fw-bold">Term Name</label>
+                            <input asp-for="Term.Name" class="form-control" />
+                            <span asp-validation-for="Term.Name" class="text-danger"></span>
+                        </div>
+
+                        <!-- Start Date input field -->
+                        <div class="mb-3">
+                            <label asp-for="Term.StartDate" class="form-label fw-bold">Start Date</label>
+                            <input asp-for="Term.StartDate" class="form-control" />
+                            <span asp-validation-for="Term.StartDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- End Date input field -->
+                        <div class="mb-3">
+                            <label asp-for="Term.EndDate" class="form-label fw-bold">End Date</label>
+                            <input asp-for="Term.EndDate" class="form-control" />
+                            <span asp-validation-for="Term.EndDate" class="text-danger"></span>
+                        </div>
+
+                        <!-- Form action buttons -->
+                        <div class="d-flex justify-content-between">
+                            <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

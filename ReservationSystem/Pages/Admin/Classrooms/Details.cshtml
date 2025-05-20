@@ -1,0 +1,166 @@
+@page
+@model ReservationSystem.Pages_Admin_Classrooms.DetailsModel
+@{
+    ViewData["Title"] = "Classroom Details";
+}
+
+<style>
+    /* Container styling for classroom details */
+    .details-container {
+        max-width: 900px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+
+    /* Table styling for weekly schedule */
+    .schedule-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: center;
+        vertical-align: middle;
+    }
+
+    .schedule-table th {
+        background-color: #f8f9fa;
+    }
+
+    .reservation-slot {
+        background-color: #e6f4ea;
+        color: #155724;
+        font-weight: 500;
+        border-radius: 6px;
+    }
+</style>
+
+<!-- Main details container -->
+<div class="details-container">
+    <h2 class="text-primary mb-4">Classroom Details</h2>
+
+    <!-- Classroom basic info -->
+    <div class="mb-4">
+        <dl class="row">
+            <dt class="col-sm-4 fw-bold">Name:</dt>
+            <dd class="col-sm-8">@Model.Classroom.Name</dd>
+
+            <dt class="col-sm-4 fw-bold">Capacity:</dt>
+            <dd class="col-sm-8">@Model.Classroom.Capacity</dd>
+        </dl>
+    </div>
+
+    <!-- Feedback section -->
+    <div class="mb-5">
+        <h4 class="text-secondary">Feedbacks</h4>
+        @if (!Model.Feedbacks.Any())
+        {
+            <div class="text-muted">No feedback submitted yet.</div>
+        }
+        else
+        {
+            <ul class="list-group mb-3">
+                @foreach (var f in Model.Feedbacks)
+                {
+                    <li class="list-group-item">
+                        <div class="mb-1">
+                            <!-- Display filled stars for rating -->
+                            @for (int i = 0; i < f.Rating; i++)
+                            {
+                                <span class="text-warning">★</span>
+                            }
+                            <!-- Display empty stars for remaining -->
+                            @for (int i = f.Rating ?? 0; i < 5; i++)
+                            {
+                                <span class="text-secondary">☆</span>
+                            }
+                        </div>
+                        @f.Comment<br />
+                        <small class="text-muted">@f.SubmittedAt.ToString("g")</small>
+                    </li>
+                }
+            </ul>
+
+            <!-- Feedback pagination -->
+            <nav aria-label="Feedback pagination">
+                <ul class="pagination justify-content-center">
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-route-id="@Model.Classroom.Id" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
+    </div>
+
+    <!-- Weekly schedule section -->
+    <div class="mb-5">
+        <h4 class="text-secondary">Weekly Schedule</h4>
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>Day</th>
+                    <th>Reservations</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    // Define days of the week
+                    var weekDays = new[] {
+                        DayOfWeek.Monday,
+                        DayOfWeek.Tuesday,
+                        DayOfWeek.Wednesday,
+                        DayOfWeek.Thursday,
+                        DayOfWeek.Friday,
+                        DayOfWeek.Saturday,
+                        DayOfWeek.Sunday
+                    };
+
+                    // Loop through each day and display reservations
+                    foreach (var day in weekDays)
+                    {
+                        var dayReservations = Model.WeeklyReservations
+                            .Where(r => r.StartTime.DayOfWeek == day)
+                            .OrderBy(r => r.StartTime)
+                            .ToList();
+
+                        <tr>
+                            <td>@day</td>
+                            <td>
+                                @if (dayReservations.Any())
+                                {
+                                    foreach (var r in dayReservations)
+                                    {
+                                        <!-- Display reservation slot info -->
+                                        <div class="reservation-slot mb-1">
+                                            @r.StartTime.ToString("HH:mm") - @r.EndTime.ToString("HH:mm")
+                                            (@r.Status)
+                                        </div>
+                                    }
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No reservations</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Action buttons -->
+    <div class="d-flex justify-content-between">
+        <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+        <a asp-page="./Edit" asp-route-id="@Model.Classroom.Id" class="btn btn-primary">Edit</a>
+    </div>
+</div>

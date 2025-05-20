@@ -1,0 +1,53 @@
+@page
+@model ReservationSystem.Pages_Admin_Classrooms.CreateModel
+
+@{
+    ViewData["Title"] = "Create Classroom";
+}
+
+<style>
+    /* Styling for the classroom creation form container */
+    .form-container {
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 30px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+<!-- Main form container -->
+<div class="form-container">
+    <h2 class="text-primary mb-4">Create New Classroom</h2>
+
+    <!-- Classroom creation form -->
+    <form method="post">
+        <!-- Display model validation summary -->
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+        <!-- Classroom Name input field -->
+        <div class="form-group mb-3">
+            <label asp-for="Classroom.Name" class="form-label fw-bold">Name <span class="text-danger">*</span></label>
+            <input asp-for="Classroom.Name" class="form-control" />
+            <span asp-validation-for="Classroom.Name" class="text-danger"></span>
+        </div>
+
+        <!-- Classroom Capacity input field -->
+        <div class="form-group mb-4">
+            <label asp-for="Classroom.Capacity" class="form-label fw-bold">Capacity</label>
+            <input asp-for="Classroom.Capacity" class="form-control" />
+            <span asp-validation-for="Classroom.Capacity" class="text-danger"></span>
+        </div>
+
+        <!-- Form action buttons -->
+        <div class="d-flex justify-content-between">
+            <a asp-page="Index" class="btn btn-outline-secondary">Back to List</a>
+            <button type="submit" class="btn btn-success">Create</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

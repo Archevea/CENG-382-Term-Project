@@ -1,0 +1,38 @@
+@page
+@model ReservationSystem.Pages_Admin_Terms.DetailsModel
+
+@{
+    ViewData["Title"] = "Term Details";
+}
+
+<!-- Main container for term details -->
+<div class="container mt-4">
+    <h1 class="text-center text-info mb-4">Term Details</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Section for displaying term information -->
+                    <h4 class="mb-4 text-center">Term Information</h4>
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Name</dt>
+                        <dd class="col-sm-9">@Model.Term.Name</dd>
+
+                        <dt class="col-sm-3 fw-bold">Start Date</dt>
+                        <dd class="col-sm-9">@Model.Term.StartDate.ToShortDateString()</dd>
+
+                        <dt class="col-sm-3 fw-bold">End Date</dt>
+                        <dd class="col-sm-9">@Model.Term.EndDate.ToShortDateString()</dd>
+                    </dl>
+
+                    <!-- Action buttons for editing or returning to the list -->
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-page="./Edit" asp-route-id="@Model.Term.Id" class="btn btn-primary">Edit</a>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

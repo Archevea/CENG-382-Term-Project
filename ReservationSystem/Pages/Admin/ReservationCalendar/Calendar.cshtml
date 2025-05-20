@@ -1,0 +1,148 @@
+@page
+@model ReservationSystem.Pages.Admin.ReservationCalendar.CalendarModel
+@{
+    ViewData["Title"] = "Admin Reservation List";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. -->
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    .table td, .table th {
+        vertical-align: middle;
+    }
+
+    /* Status color classes for reservation status */
+    .status-pending {
+        color: #ffc107;
+        font-weight: bold;
+    }
+
+    .status-approved {
+        color: #28a745;
+        font-weight: bold;
+    }
+
+    .status-rejected {
+        color: #dc3545;
+        font-weight: bold;
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a asp-page="/Admin/Index">Admin Dashboard</a></li>
+        <li><a asp-page="/Admin/Terms/Index">Manage Term</a></li>
+        <li><a asp-page="/Admin/InstructorAccounts/Index">Instructor Account Manager</a></li>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Reservation Calendar</a></li>
+        <li><a asp-page="/Admin/Classrooms/Index">Classroom List</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for reservation calendar -->
+<div class="main-content-area">
+    <h2 class="mb-4 text-primary">Admin Reservation List</h2>
+
+    <!-- Reservation table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark text-center">
+                <tr>
+                    <th>ID</th>
+                    <th>Instructor</th>
+                    <th>Classroom</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var res in Model.Reservations)
+                {
+                    // Set CSS class for reservation status
+                    var statusClass = res.Status switch
+                    {
+                        "Approved" => "status-approved",
+                        "Rejected" => "status-rejected",
+                        _ => "status-pending"
+                    };
+
+                    <tr>
+                        <td class="text-center">@res.Id</td>
+                        <td>@res.Instructor</td>
+                        <td>@res.Classroom</td>
+                        <td>@res.Start.ToString("g")</td>
+                        <td>@res.End.ToString("g")</td>
+                        <td class="text-center"><span class="@statusClass">@res.Status</span></td>
+                        <td>
+                            <div class="d-flex justify-content-center gap-2">
+                                <!-- Approve reservation form -->
+                                <form method="post" asp-page-handler="Action">
+                                    <input type="hidden" name="Request.Id" value="@res.Id" />
+                                    <input type="hidden" name="Request.Action" value="approve" />
+                                    <button class="btn btn-sm btn-success">Approve</button>
+                                </form>
+                                <!-- Reject reservation form -->
+                                <form method="post" asp-page-handler="Action">
+                                    <input type="hidden" name="Request.Id" value="@res.Id" />
+                                    <input type="hidden" name="Request.Action" value="reject" />
+                                    <button class="btn btn-sm btn-warning">Reject</button>
+                                </form>
+                                <!-- Delete reservation form -->
+                                <form method="post" asp-page-handler="Action">
+                                    <input type="hidden" name="Request.Id" value="@res.Id" />
+                                    <input type="hidden" name="Request.Action" value="delete" />
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

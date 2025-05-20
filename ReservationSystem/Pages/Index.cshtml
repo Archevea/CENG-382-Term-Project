@@ -1,0 +1,60 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. --> 
+
+<!-- Import Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<!-- Main container for the home page content -->
+<div class="container py-5">
+    <!-- Page heading -->
+    <h1 class="text-center display-5 fw-bold mb-5 text-success">Welcome to the Reservation System</h1>
+
+    <div class="row g-4">
+        <!-- Admin Panel Card -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 hover-shadow p-4 bg-light">
+                <div class="d-flex align-items-center mb-3">
+                    <!-- Admin icon -->
+                    <i class="fa-solid fa-user-shield fa-2x text-primary me-3"></i>
+                    <h4 class="mb-0 text-primary">Admin Panel</h4>
+                </div>
+                <p class="text-muted">
+                    As an <strong>Admin</strong>, you have full control over the reservation system. You can:
+                </p>
+                <ul class="list-unstyled ps-3">
+                    <!-- Admin capabilities list -->
+                    <li><i class="fa fa-check text-success me-2"></i>Create and manage instructor accounts</li>
+                    <li><i class="fa fa-check text-success me-2"></i>Define academic terms and classroom details</li>
+                    <li><i class="fa fa-check text-success me-2"></i>View all reservations</li>
+                    <li><i class="fa fa-check text-success me-2"></i>Approve, reject or delete instructor requests</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Instructor Panel Card -->
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 rounded-4 h-100 hover-shadow p-4 bg-light">
+                <div class="d-flex align-items-center mb-3">
+                    <!-- Instructor icon -->
+                    <i class="fa-solid fa-chalkboard-user fa-2x text-success me-3"></i>
+                    <h4 class="mb-0 text-success">Instructor Panel</h4>
+                </div>
+                <p class="text-muted">
+                    As an <strong>Instructor</strong>, you can use the system to:
+                </p>
+                <ul class="list-unstyled ps-3">
+                    <!-- Instructor capabilities list -->
+                    <li><i class="fa fa-check text-primary me-2"></i>View available classrooms and terms</li>
+                    <li><i class="fa fa-check text-primary me-2"></i>Request reservations via the calendar</li>
+                    <li><i class="fa fa-check text-primary me-2"></i>Submit feedback on classrooms</li>
+                    <li><i class="fa fa-check text-primary me-2"></i>Track your own reservation status</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

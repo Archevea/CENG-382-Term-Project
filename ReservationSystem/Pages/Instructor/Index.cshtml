@@ -1,0 +1,166 @@
+@page
+@model ReservationSystem.Pages.Instructor.IndexModel
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+}
+
+<!-- Generative AI technologies were used in the preparation of this page. --> 
+
+<style>
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px;
+    }
+
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+
+    .stat-box {
+        text-align: center;
+        padding: 15px;
+        border-radius: 8px;
+        background-color: #f8f9fa;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Instructor Dashboard</a></li>
+        <li><a asp-page="/Instructor/Calendar">Reservation Calendar</a></li>
+        <li><a asp-page="/Instructor/Classrooms">Classroom List & Feedback</a></li>
+        <li><a asp-page="/Instructor/MyReservations">My Reservations</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for instructor dashboard -->
+<div class="main-content-area">
+    <h1 class="mb-4 fw-bold text-success">Welcome, Instructor!</h1>
+
+    <!-- Instructor capabilities section -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 bg-light mb-4">
+        <h4 class="text-primary mb-3">Your Capabilities</h4>
+        <p class="text-muted">
+            As an <strong>Instructor</strong>, you can manage your own reservations and give feedback about classrooms.
+        </p>
+        <ul class="list-unstyled ps-3">
+            <li><i class="fa fa-check text-success me-2"></i> View and request classroom reservations via the calendar</li>
+            <li><i class="fa fa-check text-success me-2"></i> Browse classroom details including capacity and availability</li>
+            <li><i class="fa fa-check text-success me-2"></i> Submit feedback after using classrooms</li>
+            <li><i class="fa fa-check text-success me-2"></i> Track the status of your reservation requests</li>
+        </ul>
+    </div>
+
+    <!-- Reservation statistics row -->
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="stat-box border border-success">
+                <div class="text-muted">Total Reservations</div>
+                <div class="stat-value text-success">@Model.TotalReservations</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border border-warning">
+                <div class="text-muted">Pending Reservations</div>
+                <div class="stat-value text-warning">@Model.PendingReservations</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border border-primary">
+                <div class="text-muted">Approved Reservations</div>
+                <div class="stat-value text-primary">@Model.ApprovedReservations</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box border border-danger">
+                <div class="text-muted">Rejected Reservations</div>
+                <div class="stat-value text-danger">@Model.RejectedReservations</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent activity section -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 bg-light">
+        <h4 class="text-primary mb-3">Recent Activity</h4>
+
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="fw-bold">Last Reservations</h6>
+                <ul class="list-group mb-3">
+                    @foreach (var res in Model.RecentReservations)
+                    {
+                        <!-- Show recent reservation info with status color -->
+                        <li class="list-group-item d-flex justify-content-between">
+                            <div>
+                                <strong>@res.Classroom.Name</strong><br />
+                                <small>@res.StartTime:g</small>
+                            </div>
+                            <span class="fw-bold @(res.Status == "Approved" ? "text-success" : res.Status == "Rejected" ? "text-danger" : "text-warning")">
+                                @res.Status
+                            </span>
+                        </li>
+                    }
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6 class="fw-bold">Last Feedbacks</h6>
+                <ul class="list-group">
+                    @foreach (var fb in Model.RecentFeedbacks)
+                    {
+                        <!-- Show recent feedback info -->
+                        <li class="list-group-item">
+                            <strong>@fb.Classroom.Name</strong>: @fb.Rating/5<br />
+                            <small class="text-muted">@fb.SubmittedAt:g</small>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>

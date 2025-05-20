@@ -1,0 +1,40 @@
+@page
+@model ReservationSystem.Pages_Admin_Terms.DeleteModel
+
+@{
+    ViewData["Title"] = "Delete Term";
+}
+
+<!-- Main container for the delete term confirmation -->
+<div class="container mt-4">
+    <h1 class="text-center text-danger mb-4">Delete Term</h1>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <!-- Confirmation message -->
+                    <h4 class="text-center mb-3">Are you sure you want to delete this term?</h4>
+                    <!-- Display term details -->
+                    <dl class="row">
+                        <dt class="col-sm-3 fw-bold">Name</dt>
+                        <dd class="col-sm-9">@Model.Term.Name</dd>
+
+                        <dt class="col-sm-3 fw-bold">Start Date</dt>
+                        <dd class="col-sm-9">@Model.Term.StartDate.ToShortDateString()</dd>
+
+                        <dt class="col-sm-3 fw-bold">End Date</dt>
+                        <dd class="col-sm-9">@Model.Term.EndDate.ToShortDateString()</dd>
+                    </dl>
+
+                    <!-- Delete confirmation form -->
+                    <form method="post" class="mt-4 d-flex justify-content-between">
+                        <input type="hidden" asp-for="Term.Id" /> <!-- Hidden field for term ID -->
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

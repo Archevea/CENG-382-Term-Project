@@ -1,0 +1,54 @@
+@page
+@model ReservationSystem.Pages_Admin_Classrooms.EditModel
+
+@{
+    ViewData["Title"] = "Edit Classroom";
+}
+
+<style>
+    /* Styling for the edit classroom form container */
+    .edit-container {
+        max-width: 600px;
+        margin: 50px auto;
+        background-color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+</style>
+
+<!-- Main edit form container -->
+<div class="edit-container">
+    <h2 class="text-primary mb-4">Edit Classroom</h2>
+
+    <!-- Classroom edit form -->
+    <form method="post">
+        <!-- Display model validation summary -->
+        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+        <input type="hidden" asp-for="Classroom.Id" /> <!-- Hidden field for classroom ID -->
+
+        <!-- Classroom Name input field -->
+        <div class="mb-3">
+            <label asp-for="Classroom.Name" class="form-label fw-bold">Name</label>
+            <input asp-for="Classroom.Name" class="form-control" />
+            <span asp-validation-for="Classroom.Name" class="text-danger"></span>
+        </div>
+
+        <!-- Classroom Capacity input field -->
+        <div class="mb-3">
+            <label asp-for="Classroom.Capacity" class="form-label fw-bold">Capacity</label>
+            <input asp-for="Classroom.Capacity" class="form-control" />
+            <span asp-validation-for="Classroom.Capacity" class="text-danger"></span>
+        </div>
+
+        <!-- Form action buttons -->
+        <div class="d-flex justify-content-between">
+            <a asp-page="./Index" class="btn btn-outline-secondary">Back to List</a>
+            <input type="submit" value="Save" class="btn btn-primary" />
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

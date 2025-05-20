@@ -1,0 +1,184 @@
+@page
+@model ReservationSystem.Pages.Admin.IndexModel
+@{
+    ViewData["Title"] = "Admin Dashboard";
+}
+
+<style>
+    /* Side navigation panel styling */
+    .side-panel {
+        position: fixed;
+        left: 0;
+        top: 60px;
+        bottom: 0;
+        width: 250px;
+        background-color: white;
+        color: #333;
+        overflow-y: auto;
+        z-index: 998;
+        padding-top: 20px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    }
+
+    .side-panel ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .side-panel li {
+        margin-bottom: 5px;
+    }
+
+    .side-panel a {
+        display: block;
+        padding: 12px 20px;
+        color: #333;
+        text-decoration: none;
+        transition: background-color 0.3s;
+    }
+
+    .side-panel a:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+
+    /* Main content area styling */
+    .main-content-area {
+        margin-left: 250px;
+        padding: 30px 20px 20px 20px;
+    }
+
+    /* Statistic box styling */
+    .stat-box {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        text-align: center;
+    }
+
+    .stat-title {
+        font-weight: 600;
+        color: #555;
+    }
+
+    .stat-value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #007bff;
+    }
+</style>
+
+<!-- Side navigation panel -->
+<div class="side-panel">
+    <ul>
+        <li><a class="fw-bold" style="background-color: #e9ecef;">Admin Dashboard</a></li>
+        <li><a asp-page="/Admin/Terms/Index">Manage Term</a></li>
+        <li><a asp-page="/Admin/InstructorAccounts/Index">Instructor Account Manager</a></li>
+        <li><a asp-page="/Admin/ReservationCalendar/Calendar">Reservation Calendar</a></li>
+        <li><a asp-page="/Admin/Classrooms/Index">Classroom List</a></li>
+    </ul>
+</div>
+
+<!-- Main content area for admin dashboard -->
+<div class="main-content-area">
+    <h1 class="mb-4 fw-bold text-success">Welcome, Admin!</h1>
+
+    <!-- Reservation statistics row -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-3">
+            <div class="stat-box">
+                <div class="stat-title">Total Reservations</div>
+                <div class="stat-value">@Model.TotalReservations</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <div class="stat-title">Pending Reservations</div>
+                <div class="stat-value text-warning">@Model.PendingCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <div class="stat-title">Approved Reservations</div>
+                <div class="stat-value text-success">@Model.ApprovedCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-box">
+                <div class="stat-title">Rejected Reservations</div>
+                <div class="stat-value text-danger">@Model.RejectedCount</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Classroom and term statistics row -->
+    <div class="row mb-4 g-3">
+        <div class="col-md-4">
+            <div class="stat-box">
+                <div class="stat-title">Total Classrooms</div>
+                <div class="stat-value">@Model.TotalClassrooms</div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="stat-box">
+                <div class="stat-title">Current Active Term</div>
+                <div class="stat-value">@Model.ActiveTermName</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin capabilities section -->
+    <div class="card shadow-sm border-0 rounded-4 p-4 bg-light mb-4">
+        <h4 class="text-primary mb-3">Your Capabilities</h4>
+        <p class="text-muted">
+            As an <strong>Admin</strong>, you can manage the overall functionality of the reservation system.
+        </p>
+        <ul class="list-unstyled ps-3">
+            <li><i class="fa fa-check text-success me-2"></i> Create and manage instructor accounts</li>
+            <li><i class="fa fa-check text-success me-2"></i> Define academic terms</li>
+            <li><i class="fa fa-check text-success me-2"></i> Add and maintain classroom information</li>
+            <li><i class="fa fa-check text-success me-2"></i> View, approve, or reject reservation requests</li>
+            <li><i class="fa fa-check text-success me-2"></i> View classroom feedback submitted by instructors</li>
+        </ul>
+    </div>
+
+    <div class="row">
+        <!-- Recent Reservations section -->
+        <div class="col-md-6">
+            <h5>Recent Reservations</h5>
+            <ul class="list-group">
+                @foreach (var r in Model.LatestReservations)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>@r.Classroom.Name</strong><br />
+                            <small>@r.StartTime.ToString("g") - @r.EndTime.ToString("g")</small>
+                        </div>
+                        <span class="badge rounded-pill 
+                            @(r.Status == "Approved" ? "bg-success" : r.Status == "Rejected" ? "bg-danger" : "bg-warning text-dark")">
+                            @r.Status
+                        </span>
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <!-- Recent Feedbacks section -->
+        <div class="col-md-6">
+            <h5>Recent Feedbacks</h5>
+            <ul class="list-group">
+                @foreach (var f in Model.LatestFeedbacks)
+                {
+                    <li class="list-group-item">
+                        <strong>@f.Classroom.Name:</strong> @f.Comment <br />
+                        <span class="text-muted">Rating: @f.Rating/5 - @f.SubmittedAt.ToString("g")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Font Awesome icons for capabilities list -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />

@@ -1,0 +1,43 @@
+@page
+@model ReservationSystem.Pages.Admin.InstructorAccounts.DeleteModel
+@{
+    ViewData["Title"] = "Deactivate Instructor";
+}
+
+<style>
+    /* Styling for the deactivate instructor confirmation container */
+    .deactivate-container {
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .deactivate-container h2 {
+        margin-bottom: 20px;
+        text-align: center;
+        color: #e67e22;
+    }
+
+    .deactivate-container .alert {
+        font-size: 1.05rem;
+    }
+</style>
+
+<!-- Main container for deactivate confirmation -->
+<div class="deactivate-container">
+    <h2>Deactivate Instructor</h2>
+
+    <!-- Warning message for deactivation confirmation -->
+    <div class="alert alert-warning text-center">
+        Are you sure you want to deactivate instructor <strong>@Model.Instructor.Email</strong>?
+    </div>
+
+    <!-- Deactivation confirmation form -->
+    <form method="post" class="d-flex justify-content-between">
+        <button type="submit" class="btn btn-danger px-4">Yes, Deactivate</button>
+        <a asp-page="./Index" class="btn btn-outline-secondary px-4">Cancel</a>
+    </form>
+</div>
